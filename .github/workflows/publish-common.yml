@@ -6,16 +6,13 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+permissions:
+  contents: read
+  packages: write
 
 jobs:
   publish-jar:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      packages: write
 
     steps:
       - name: Checkout Code
@@ -27,21 +24,6 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: 'maven'
-          server-id: github
-          server-username: GITHUB_ACTOR
-          server-password: GITHUB_TOKEN
-
-      - name: Configure Maven for GitHub Packages Auth
-        uses: s4u/maven-settings-action@v4.0.0
-        with:
-          servers: |
-            [
-              {
-                "id": "github",
-                "username": "${{ github.actor }}",
-                "password": "${{ secrets.GITHUB_TOKEN }}"
-              }
-            ]
 
       - name: Publish to GitHub Packages
         run: mvn --batch-mode deploy -DskipTests
