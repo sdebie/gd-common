@@ -55,7 +55,7 @@
         <repository>
             <id>github</id>
             <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/shawndebie/dane-tree</url>
+            <url>https://maven.pkg.github.com/shawndebie/gd-common</url>
         </repository>
     </distributionManagement>
 
