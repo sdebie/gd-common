@@ -20,14 +20,6 @@
         <quarkus.platform.version>3.32.1</quarkus.platform.version>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>github</id>
-            <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/shawndebie/dane-tree</url>
-        </repository>
-    </repositories>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
