@@ -13,12 +13,15 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import lombok.extern.slf4j.Slf4j;
 import org.danetree.common.dto.ParentCardDto;
 import org.danetree.common.dto.ParentUpdateDto;
 
 import static java.sql.Timestamp.*;
 
 @ApplicationScoped
+@Slf4j
 public class ParentRepository {
 
     private static final String FIND_PARENTS_SQL = """
@@ -133,6 +136,7 @@ public class ParentRepository {
                 ));
             }
         } catch (SQLException e) {
+            log.error("Unable to query dogs table", e);
             throw new IllegalStateException("Unable to query dogs table", e);
         }
         return parents;
