@@ -7,9 +7,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.danetree.common.dto.LitterDto;
+import org.danetree.common.dto.LitterImageDto;
 import org.danetree.common.dto.LitterUpdateDto;
 
 @ApplicationScoped
@@ -19,6 +22,13 @@ public class LitterRepository {
             SELECT id, code, title, birth_month, birth_year, description, parent_pair_id
             FROM litters
             ORDER BY birth_year ASC, birth_month ASC
+            """;
+
+    private static final String FIND_LITTER_IMAGES_SQL = """
+            SELECT id, image_url, caption, is_main
+            FROM litter_images
+            WHERE litter_id = ?
+            ORDER BY is_main DESC, created_at ASC
             """;
 
     private static final String UPDATE_LITTER_SQL = """
@@ -34,20 +44,41 @@ public class LitterRepository {
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
+                UUID litterId = (UUID) resultSet.getObject("id");
+                List<LitterImageDto> images = getLitterImages(connection, litterId);
                 litters.add(new LitterDto(
-                        (UUID) resultSet.getObject("id"),
+                        litterId,
                         resultSet.getString("code"),
                         resultSet.getString("title"),
                         resultSet.getInt("birth_month"),
                         resultSet.getInt("birth_year"),
                         resultSet.getString("description"),
-                        (UUID) resultSet.getObject("parent_pair_id")
+                        (UUID) resultSet.getObject("parent_pair_id"),
+                        images
                 ));
             }
         } catch (SQLException e) {
             throw new IllegalStateException("Unable to query litters table", e);
         }
         return litters;
+    }
+
+    private List<LitterImageDto> getLitterImages(Connection connection, UUID litterId) throws SQLException {
+        List<LitterImageDto> images = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(FIND_LITTER_IMAGES_SQL)) {
+            statement.setObject(1, litterId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    images.add(new LitterImageDto(
+                            (UUID) resultSet.getObject("id"),
+                            resultSet.getString("image_url"),
+                            resultSet.getString("caption"),
+                            resultSet.getBoolean("is_main")
+                    ));
+                }
+            }
+        }
+        return images;
     }
 
     public boolean updateLitter(LitterUpdateDto input) {

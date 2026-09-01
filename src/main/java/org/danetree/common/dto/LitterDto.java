@@ -1,5 +1,6 @@
 package org.danetree.common.dto;
 
+import java.util.List;
 import java.util.UUID;
 
 public record LitterDto(
@@ -9,6 +10,7 @@ public record LitterDto(
         int birthMonth,
         int birthYear,
         String description,
-        UUID parentPairId
+        UUID parentPairId,
+        List<LitterImageDto> images
 ) {
 }
